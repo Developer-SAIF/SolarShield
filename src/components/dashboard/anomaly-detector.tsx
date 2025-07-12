@@ -28,17 +28,10 @@ export function AnomalyDetector() {
     setLoading(true);
     setResult(null);
     try {
-      // In a real app, this data would come from a live sensor feed.
-      const mockSensorData = {
-        surfaceTemperature: 65.5,
-        ambientTemperature: 32.1,
-        voltage: 34.2,
-        current: 7.5,
-        power: 256.5,
-        timestamp: new Date().toISOString(),
-      };
-      const response = await detectAnomalies(mockSensorData);
-      setResult(response);
+      // TODO: Replace with real sensor data fetch
+      // const sensorData = ...
+      // const response = await detectAnomalies(sensorData);
+      // setResult(response);
     } catch (error) {
       console.error("Anomaly detection failed:", error);
       toast({
@@ -93,7 +86,10 @@ export function AnomalyDetector() {
               </AlertDescription>
             </Alert>
           ) : (
-            <Alert variant="default" className="bg-green-100 dark:bg-green-900/20 border-green-300 dark:border-green-700">
+            <Alert
+              variant="default"
+              className="bg-green-100 dark:bg-green-900/20 border-green-300 dark:border-green-700"
+            >
               <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
               <AlertTitle className="text-green-800 dark:text-green-300">
                 System Operating Normally

@@ -1,27 +1,91 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { getCurrentWeather } from "@/services/weather";
+"use client";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Gauge, Thermometer, ThermometerSun, Waves, Zap } from "lucide-react";
 
-export async function StatsCards() {
-  const weatherData = await getCurrentWeather();
+const SPREADSHEET_ID = "1OB4r6sFvEDmC3YMfq-vyNQpsbmzOPbKDnW8eiMs_awU";
+const RANGE = "SolarShield00001!A1:I";
+
+interface StatsData {
+  surfaceTemp: string;
+  ambientTemp: string;
+  voltage: string;
+  current: string;
+  power: string;
+}
+
+export default function StatsCards() {
+  const [statsData, setStatsData] = useState<StatsData | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/sheets", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            spreadsheetId: SPREADSHEET_ID,
+            range: RANGE,
+            action: "read",
+          }),
+        });
+        const data = await res.json();
+        if (Array.isArray(data.data) && data.data.length > 1) {
+          const latest = data.data[data.data.length - 1];
+          setStatsData({
+            surfaceTemp: latest[1],
+            ambientTemp: latest[2],
+            voltage: latest[3],
+            current: latest[4],
+            power: latest[5],
+          });
+        }
+      } catch {
+        setStatsData(null);
+      }
+    })();
+  }, []);
 
   const stats = [
-    { name: "Surface Temp.", value: "48.2°C", icon: ThermometerSun, description: "Hotter than ambient" },
-    { name: "Ambient Temp.", value: `${weatherData.temperature.toFixed(1)}°C`, icon: Thermometer, description: "Live weather data" },
-    { name: "Voltage", value: "35.8 V", icon: Zap, description: "Nominal range" },
-    { name: "Current", value: "8.1 A", icon: Waves, description: "Peak sunlight" },
-    { name: "Power Output", value: "290 W", icon: Gauge, description: "Optimal performance" },
+    {
+      name: "Surface Temp.",
+      value: statsData ? `${statsData.surfaceTemp}°C` : "-",
+      icon: ThermometerSun,
+      description: "Latest from sheet",
+    },
+    {
+      name: "Ambient Temp.",
+      value: statsData ? `${statsData.ambientTemp}°C` : "-",
+      icon: Thermometer,
+      description: "Latest from sheet",
+    },
+    {
+      name: "Voltage",
+      value: statsData ? `${statsData.voltage} V` : "-",
+      icon: Zap,
+      description: "Latest from sheet",
+    },
+    {
+      name: "Current",
+      value: statsData ? `${statsData.current} A` : "-",
+      icon: Waves,
+      description: "Latest from sheet",
+    },
+    {
+      name: "Power Output",
+      value: statsData ? `${statsData.power} W` : "-",
+      icon: Gauge,
+      description: "Latest from sheet",
+    },
   ];
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
       {stats.map((stat) => (
-        <Card key={stat.name} className="hover:shadow-md transition-shadow duration-300">
+        <Card
+          key={stat.name}
+          className="hover:shadow-md transition-shadow duration-300"
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{stat.name}</CardTitle>
             <stat.icon className="h-4 w-4 text-muted-foreground" />

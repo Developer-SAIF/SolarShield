@@ -1,8 +1,8 @@
-import { AnomalyDetector } from '@/components/dashboard/anomaly-detector';
-import { Header } from '@/components/dashboard/header';
-import { HistoricalChart } from '@/components/dashboard/historical-chart';
-import { PumpLog } from '@/components/dashboard/pump-log';
-import { StatsCards } from '@/components/dashboard/stats-cards';
+import { AnomalyDetector } from "@/components/dashboard/anomaly-detector";
+import { Header } from "@/components/dashboard/header";
+import { HistoricalChart } from "@/components/dashboard/historical-chart";
+import { PumpLog } from "@/components/dashboard/pump-log";
+import StatsCards from "@/components/dashboard/stats-cards";
 
 export default function Home() {
   return (
